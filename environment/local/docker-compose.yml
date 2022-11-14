@@ -1,0 +1,44 @@
+services:
+  frontend_builder:
+    image: nodejs
+    build:
+      context: ./../../
+      dockerfile: ./environment/local/Dockerfile
+    volumes:
+      - ./../../:/app
+    entrypoint: /entrypoint-frontend.sh .
+
+  frontend_server:
+    logging:
+      driver: none
+    image: nginx:1.23-alpine
+    volumes:
+      - ./../../dist:/usr/share/nginx/html
+    ports:
+      - 8080:80
+    depends_on:
+      - frontend_builder
+
+  backend_builder:
+    image: nodejs
+    build:
+      context: ./../../
+      dockerfile: ./environment/local/Dockerfile
+    volumes:
+      - ./../../:/app
+    entrypoint: /entrypoint-backend.sh .
+    ports:
+    - 9222:9222
+
+  node:
+    image: nodejs
+    build:
+      context: ./../../
+      dockerfile: ./environment/local/Dockerfile
+    volumes:
+      - ./../../:/app
+    ports:
+      - 9222:9222
+
+volumes:
+  frontend_dist_volume:
