@@ -1,2 +1,4 @@
-import SomeCommonClass from "../main/SomeCommonClass";
-new SomeCommonClass().test('back');
+import "./api/controllers/ControllerMapper";
+
+import HttpApiBuilder from "./api/HttpApiBuilder";
+HttpApiBuilder.start();

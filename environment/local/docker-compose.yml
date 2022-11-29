@@ -1,6 +1,7 @@
 services:
   frontend_builder:
     image: nodejs
+    container_name: ${COMPOSE_PROJECT_NAME}_frontend_builder
     build:
       context: ./../../
       dockerfile: ./environment/local/Dockerfile
@@ -12,6 +13,7 @@ services:
     logging:
       driver: none
     image: nginx:1.23-alpine
+    container_name: ${COMPOSE_PROJECT_NAME}_frontend_server
     volumes:
       - ./../../dist:/usr/share/nginx/html
     ports:
@@ -21,24 +23,46 @@ services:
 
   backend_builder:
     image: nodejs
+    container_name: ${COMPOSE_PROJECT_NAME}_backend_builder
     build:
       context: ./../../
       dockerfile: ./environment/local/Dockerfile
     volumes:
       - ./../../:/app
     entrypoint: /entrypoint-backend.sh .
+    networks:
+      - flashcards_network
     ports:
     - 9222:9222
+    - 3000:3000
 
   node:
     image: nodejs
+    container_name: ${COMPOSE_PROJECT_NAME}_node
     build:
       context: ./../../
       dockerfile: ./environment/local/Dockerfile
     volumes:
       - ./../../:/app
+
+  backend-db:
+    image: postgres:13
+    container_name: ${COMPOSE_PROJECT_NAME}_pgsql
+    restart: unless-stopped
+    networks:
+      - flashcards_network
     ports:
-      - 9222:9222
+      - 5432:5432
+    volumes:
+      - pgsql_cache:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "flashcards"
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "admin"
+
+networks:
+  flashcards_network:
 
 volumes:
   frontend_dist_volume:
+  pgsql_cache:
