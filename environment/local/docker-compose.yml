@@ -1,29 +1,8 @@
 services:
-  frontend_builder:
-    image: nodejs
-    container_name: ${COMPOSE_PROJECT_NAME}_frontend_builder
-    build:
-      context: ./../../
-      dockerfile: ./environment/local/Dockerfile
-    volumes:
-      - ./../../:/app
-    entrypoint: /entrypoint-frontend.sh .
-
-  frontend_server:
-    logging:
-      driver: none
-    image: nginx:1.23-alpine
-    container_name: ${COMPOSE_PROJECT_NAME}_frontend_server
-    volumes:
-      - ./../../dist:/usr/share/nginx/html
-    ports:
-      - 8080:80
-    depends_on:
-      - frontend_builder
-
   backend_builder:
     image: nodejs
     container_name: ${COMPOSE_PROJECT_NAME}_backend_builder
+    restart: unless-stopped
     build:
       context: ./../../
       dockerfile: ./environment/local/Dockerfile
@@ -51,8 +30,6 @@ services:
     restart: unless-stopped
     networks:
       - flashcards_network
-    ports:
-      - 5432:5432
     volumes:
       - pgsql_cache:/var/lib/postgresql/data
     environment:
