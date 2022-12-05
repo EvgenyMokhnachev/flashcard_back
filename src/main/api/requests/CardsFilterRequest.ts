@@ -1,9 +1,11 @@
 import CardFilter from "../../domain/cards/CardFilter";
+import CardDifficultType from "../../domain/cards/CardDifficultType";
 
 export default class CardsFilterRequest {
   ids?: number[];
   userIds?: number[];
   folderIds?: number[];
+  difficultTypes?: CardDifficultType[];
 
   public static map(request: CardsFilterRequest): CardFilter {
     const filter = new CardFilter();
@@ -15,6 +17,9 @@ export default class CardsFilterRequest {
     }
     if (request.folderIds && request.folderIds.length) {
       filter.byFolderIds(request.folderIds);
+    }
+    if (request.difficultTypes && request.difficultTypes.length) {
+      filter.byDifficultTypes(request.difficultTypes);
     }
     return filter;
   }

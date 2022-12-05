@@ -6,6 +6,7 @@
         }
     },
     "compilerOptions": {
+        "skipLibCheck": true,
         "strictPropertyInitialization": false,
         "sourceMap": true,
         "outDir": "./dist/",

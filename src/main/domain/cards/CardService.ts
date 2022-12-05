@@ -12,6 +12,8 @@ import CardManageForbiddenError from "./errors/CardManageForbiddenError";
 import User from "../user/User";
 import UserFilter from "../user/UserFilter";
 import {UserNotFoundError} from "../user/errors/UserNotFoundError";
+import CardDifficultType from "./CardDifficultType";
+import CardDifficultTypeNotFoundError from "./errors/CardDifficultTypeNotFoundError";
 
 class CardService {
 
@@ -80,6 +82,14 @@ class CardService {
       card.folderId = data.folderId;
     }
 
+    if (data.difficult !== undefined) {
+      const typeExists = CardDifficultType[data.difficult];
+      if (!typeExists) {
+        throw new CardDifficultTypeNotFoundError(data.difficult);
+      }
+      card.difficult = data.difficult;
+    }
+
     return await cardRepository.save(card);
   }
 
@@ -106,7 +116,8 @@ class CardService {
       data.folderId,
       data.userId,
       data.frontSide,
-      data.backSide
+      data.backSide,
+      CardDifficultType.DONT_SURE
     );
 
     return await cardRepository.save(cardToCreate);

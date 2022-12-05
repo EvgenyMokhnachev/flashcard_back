@@ -23,6 +23,8 @@ services:
       dockerfile: ./environment/local/Dockerfile
     volumes:
       - ./../../:/app
+    networks:
+      - flashcards_network
 
   backend-db:
     image: postgres:13

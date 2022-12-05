@@ -5,6 +5,7 @@ import CardPgSqlMapper from "./CardPgSqlMapper";
 import Card from "../../../domain/cards/Card";
 import CardFilter from "../../../domain/cards/CardFilter";
 import CardRepository from "../../../domain/cards/CardRepository";
+import CardDifficultType from "../../../domain/cards/CardDifficultType";
 
 export default class implements CardRepository {
 
@@ -49,10 +50,16 @@ export default class implements CardRepository {
     this.addFilterByUserIds(filter.userIds, query);
     this.addFilterByFolderIds(filter.folderIds, query);
     this.addFilterByIds(filter.ids, query);
+    this.addFilterByDifficultTypes(filter.difficultTypes, query);
 
     let CardPgSqlItems = await query.getMany();
 
     return CardPgSqlItems.map(CardPgSqlItem => CardPgSqlMapper.toDto(CardPgSqlItem));
+  }
+
+  private addFilterByDifficultTypes(difficultTypes: CardDifficultType[] | undefined, query: SelectQueryBuilder<CardPgSql>): void {
+    if (!difficultTypes || !difficultTypes.length) return;
+    query.andWhere("c.difficult IN (:...difficultTypes)", {difficultTypes});
   }
 
   private addFilterByUserIds(userIds: number[] | undefined, query: SelectQueryBuilder<CardPgSql>): void {

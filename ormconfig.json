@@ -1,0 +1,10 @@
+{
+  "type": "postgres",
+  "host": "backend-db",
+  "port": 5432,
+  "username": "root",
+  "password": "admin",
+  "database": "flashcards",
+  "migrationsTableName": "flashcards_migrations_log",
+  "migrations": ["/app/src/main/database/pgsql/migrations/*.ts"]
+}

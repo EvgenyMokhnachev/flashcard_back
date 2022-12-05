@@ -1,7 +1,10 @@
+import CardDifficultType from "./CardDifficultType";
+
 export default class CardFilter {
   private _ids?: number[];
   private _userIds?: number[];
   private _folderIds?: number[];
+  private _difficultTypes?: CardDifficultType[];
 
   public static create(): CardFilter {
     return new CardFilter();
@@ -27,6 +30,11 @@ export default class CardFilter {
     return this;
   }
 
+  public byDifficultTypes(difficultTypes?: CardDifficultType[]): CardFilter {
+    this._difficultTypes = difficultTypes;
+    return this;
+  }
+
   public byFolderIds(folderIds: number[]): CardFilter {
     this._folderIds = folderIds;
     return this;
@@ -47,5 +55,9 @@ export default class CardFilter {
 
   get folderIds(): number[] | undefined {
     return this._folderIds;
+  }
+
+  get difficultTypes(): CardDifficultType[] | undefined {
+    return this._difficultTypes;
   }
 }

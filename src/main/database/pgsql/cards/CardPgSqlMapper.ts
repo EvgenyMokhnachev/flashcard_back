@@ -9,7 +9,8 @@ class CardPgSqlMapper {
       card.folderId,
       card.userId,
       card.frontSide,
-      card.backSide
+      card.backSide,
+      card.difficult
     )
   }
 
@@ -19,7 +20,8 @@ class CardPgSqlMapper {
       card.folderId,
       card.userId,
       card.frontSide,
-      card.backSide
+      card.backSide,
+      card.difficult
     );
   }
 

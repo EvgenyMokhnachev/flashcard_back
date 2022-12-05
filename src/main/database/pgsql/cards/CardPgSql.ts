@@ -1,4 +1,5 @@
 import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import CardDifficultType from "../../../domain/cards/CardDifficultType";
 
 @Entity({name: "cards"})
 export default class CardPgSql extends BaseEntity {
@@ -18,12 +19,16 @@ export default class CardPgSql extends BaseEntity {
   @Column({type: "varchar", name: "back_side"})
   public backSide?: string;
 
-  constructor(id?: number, folderId?: number | null, userId?: number, frontSide?: string, backSide?: string) {
+  @Column({type: "integer", name: "difficult"})
+  public difficult?: CardDifficultType;
+
+  constructor(id?: number, folderId?: number | null, userId?: number, frontSide?: string, backSide?: string, difficult?: CardDifficultType) {
     super();
     this.id = id;
     this.folderId = folderId;
     this.userId = userId;
     this.frontSide = frontSide;
     this.backSide = backSide;
+    this.difficult = difficult;
   }
 }
