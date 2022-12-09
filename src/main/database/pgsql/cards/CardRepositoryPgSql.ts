@@ -52,6 +52,8 @@ export default class implements CardRepository {
     this.addFilterByIds(filter.ids, query);
     this.addFilterByDifficultTypes(filter.difficultTypes, query);
 
+    query.addOrderBy('id', 'DESC');
+
     let CardPgSqlItems = await query.getMany();
 
     return CardPgSqlItems.map(CardPgSqlItem => CardPgSqlMapper.toDto(CardPgSqlItem));

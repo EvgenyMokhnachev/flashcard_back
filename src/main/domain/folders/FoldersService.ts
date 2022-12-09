@@ -9,6 +9,7 @@ import {FolderNotFoundError} from "./exceptions/FolderNotFoundError";
 import {FolderManagementForbiddenError} from "./exceptions/FolderManagementForbiddenError";
 import CardFilter from "../cards/CardFilter";
 import Card from "../cards/Card";
+import {FolderParentInCycleError} from "./exceptions/FolderParentInCycleError";
 
 class FoldersService {
 
@@ -38,6 +39,27 @@ class FoldersService {
     return await folderRepository.save(item);
   }
 
+  private async getAllParentIds(folder?: Folder, parentIds?: number[]): Promise<number[]> {
+    const result = parentIds ? [...parentIds] : [];
+    if (!folder) return result;
+
+    let parentFolder = undefined;
+    if (folder.parentId) {
+      result.push(folder.parentId);
+      parentFolder = await folderRepository.findById(folder.parentId);
+    }
+
+    return await this.getAllParentIds(parentFolder, result);
+  }
+
+  private async findFoldersCycle(folder: Folder, parentFolder: Folder): Promise<boolean> {
+    if (!parentFolder) return false;
+    if (!folder) return false;
+    if (!folder.id) return false;
+    let allParentIds: number[] = await this.getAllParentIds(parentFolder);
+    return allParentIds.indexOf(folder.id) > -1;
+  }
+
   public async updateFolder(updateData: FolderManageDto, actorUserId: number) {
     if (!updateData.id) {
       throw new FolderNotFoundError(updateData.id);
@@ -50,8 +72,14 @@ class FoldersService {
 
     if (updateData.parentId) {
       let parentFolder: Folder | undefined = await folderRepository.findById(updateData.parentId);
+      parentFolder?.parentId
       if (!parentFolder) {
         throw new FolderNotFoundError(updateData.parentId);
+      }
+
+      let foundCycle = await this.findFoldersCycle(folder, parentFolder);
+      if (foundCycle) {
+        throw new FolderParentInCycleError();
       }
     }
 
@@ -68,6 +96,9 @@ class FoldersService {
     }
 
     if (updateData.name !== undefined) {
+      if (!updateData.name) {
+        throw new FolderNameEmptyError();
+      }
       folder.name = updateData.name;
     }
 
