@@ -28,6 +28,10 @@ export default class implements CardRepository {
   }
 
   public async save(card: Card): Promise<Card> {
+    if (!card.createdAt) {
+      card.createdAt = new Date();
+    }
+
     return CardPgSqlMapper.toDto(
       await (await this.getCardRepository())
         .save(CardPgSqlMapper.toDb(card))

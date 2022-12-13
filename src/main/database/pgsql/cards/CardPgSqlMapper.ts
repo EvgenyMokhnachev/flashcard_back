@@ -10,7 +10,9 @@ class CardPgSqlMapper {
       card.userId,
       card.frontSide,
       card.backSide,
-      card.difficult
+      card.difficult,
+      card.difficultChangeTime,
+      card.createdAt
     )
   }
 
@@ -21,7 +23,9 @@ class CardPgSqlMapper {
       card.userId,
       card.frontSide,
       card.backSide,
-      card.difficult
+      card.difficult,
+      card.difficultChangeTime,
+      card.createdAt
     );
   }
 

@@ -82,12 +82,13 @@ class CardService {
       card.folderId = data.folderId;
     }
 
-    if (data.difficult !== undefined) {
+    if (data.difficult !== undefined && card.difficult != data.difficult) {
       const typeExists = CardDifficultType[data.difficult];
       if (!typeExists) {
         throw new CardDifficultTypeNotFoundError(data.difficult);
       }
       card.difficult = data.difficult;
+      card.difficultChangeTime = new Date();
     }
 
     return await cardRepository.save(card);
@@ -117,7 +118,8 @@ class CardService {
       data.userId,
       data.frontSide,
       data.backSide,
-      CardDifficultType.DONT_SURE
+      CardDifficultType.DONT_SURE,
+      new Date()
     );
 
     return await cardRepository.save(cardToCreate);

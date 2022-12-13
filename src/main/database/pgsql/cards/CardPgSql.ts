@@ -22,7 +22,18 @@ export default class CardPgSql extends BaseEntity {
   @Column({type: "integer", name: "difficult"})
   public difficult?: CardDifficultType;
 
-  constructor(id?: number, folderId?: number | null, userId?: number, frontSide?: string, backSide?: string, difficult?: CardDifficultType) {
+  @Column({type: "timestamp", name: "difficult_change_time", nullable: false})
+  public difficultChangeTime?: Date;
+
+  @Column({type: "timestamp", name: "created_at", nullable: false})
+  public createdAt?: Date;
+
+  constructor(id?: number,
+              folderId?: number | null, userId?: number,
+              frontSide?: string, backSide?: string,
+              difficult?: CardDifficultType, difficultChangeTime?: Date,
+              createdAt?: Date
+  ) {
     super();
     this.id = id;
     this.folderId = folderId;
@@ -30,5 +41,7 @@ export default class CardPgSql extends BaseEntity {
     this.frontSide = frontSide;
     this.backSide = backSide;
     this.difficult = difficult;
+    this.difficultChangeTime = difficultChangeTime;
+    this.createdAt = createdAt;
   }
 }
