@@ -13,7 +13,8 @@ EndpointBuilder
       req.userId,
       req.body.folderId,
       req.body.frontSide,
-      req.body.backSide
+      req.body.backSide,
+      req.body.bookmarked,
     );
     let card = await cardService.createCard(createCartDto);
     res.json(card);
@@ -29,7 +30,8 @@ EndpointBuilder
       req.body.folderId,
       req.body.frontSide,
       req.body.backSide,
-      req.body.difficult
+      req.body.bookmarked,
+      req.body.difficult,
     );
     let card = await cardService.updateCard(manageCardDto, req.userId);
     res.json(card);

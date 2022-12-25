@@ -12,7 +12,8 @@ class CardPgSqlMapper {
       card.backSide,
       card.difficult,
       card.difficultChangeTime,
-      card.createdAt
+      card.createdAt,
+      card.bookmarked
     )
   }
 
@@ -25,7 +26,8 @@ class CardPgSqlMapper {
       card.backSide,
       card.difficult,
       card.difficultChangeTime,
-      card.createdAt
+      card.createdAt,
+      card.bookmarked
     );
   }
 

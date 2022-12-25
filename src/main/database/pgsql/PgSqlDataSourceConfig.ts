@@ -8,6 +8,7 @@ import {create_cards_table_1600000000003} from "./migrations/1600000000003-creat
 import {add_difficult_column_in_cards_table_1600000000004} from "./migrations/1600000000004-add_difficult_column_in_cards_table";
 import {add_difficult_change_time_column_in_cards_table_1600000000005} from "./migrations/1600000000005-add_difficult_change_time_column_in_cards_table";
 import {add_created_at_column_in_cards_table_1600000000006} from "./migrations/1600000000006-add_created_at_column_in_cards_table";
+import {add_bookmarked_column_in_cards_table_1600000000007} from "./migrations/1600000000007-add_bookmarked_column_in_cards_table";
 
 export default new DataSource({
   type: "postgres",
@@ -26,6 +27,7 @@ export default new DataSource({
     create_cards_table_1600000000003,
     add_difficult_column_in_cards_table_1600000000004,
     add_difficult_change_time_column_in_cards_table_1600000000005,
-    add_created_at_column_in_cards_table_1600000000006
+    add_created_at_column_in_cards_table_1600000000006,
+    add_bookmarked_column_in_cards_table_1600000000007
   ]
 })

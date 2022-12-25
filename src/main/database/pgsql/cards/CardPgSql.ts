@@ -28,11 +28,15 @@ export default class CardPgSql extends BaseEntity {
   @Column({type: "timestamp", name: "created_at", nullable: false})
   public createdAt?: Date;
 
+  @Column({type: "boolean", name: "bookmarked", nullable: false})
+  public bookmarked?: boolean;
+
   constructor(id?: number,
               folderId?: number | null, userId?: number,
               frontSide?: string, backSide?: string,
               difficult?: CardDifficultType, difficultChangeTime?: Date,
-              createdAt?: Date
+              createdAt?: Date,
+              bookmarked?: boolean
   ) {
     super();
     this.id = id;
@@ -43,5 +47,6 @@ export default class CardPgSql extends BaseEntity {
     this.difficult = difficult;
     this.difficultChangeTime = difficultChangeTime;
     this.createdAt = createdAt;
+    this.bookmarked = bookmarked;
   }
 }

@@ -82,6 +82,10 @@ class CardService {
       card.folderId = data.folderId;
     }
 
+    if (data.bookmarked !== undefined) {
+      card.bookmarked = data.bookmarked;
+    }
+
     if (data.difficult !== undefined && card.difficult != data.difficult) {
       const typeExists = CardDifficultType[data.difficult];
       if (!typeExists) {
@@ -119,7 +123,9 @@ class CardService {
       data.frontSide,
       data.backSide,
       CardDifficultType.DONT_SURE,
-      new Date()
+      new Date(),
+      new Date(),
+      data.bookmarked || false
     );
 
     return await cardRepository.save(cardToCreate);

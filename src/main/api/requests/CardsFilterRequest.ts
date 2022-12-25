@@ -6,6 +6,9 @@ export default class CardsFilterRequest {
   userIds?: number[];
   folderIds?: number[];
   difficultTypes?: CardDifficultType[];
+  private bookmarked?: boolean;
+  private createdAtFrom?: Date;
+  private createdAtTo?: Date;
 
   public static map(request: CardsFilterRequest): CardFilter {
     const filter = new CardFilter();
@@ -20,6 +23,15 @@ export default class CardsFilterRequest {
     }
     if (request.difficultTypes && request.difficultTypes.length) {
       filter.byDifficultTypes(request.difficultTypes);
+    }
+    if (request.bookmarked !== undefined && request.bookmarked !== null) {
+      filter.byBookmarked(request.bookmarked);
+    }
+    if (request.createdAtFrom !== undefined && request.createdAtFrom !== null) {
+      filter.byCreatedAtFrom(request.createdAtFrom);
+    }
+    if (request.createdAtTo !== undefined && request.createdAtTo !== null) {
+      filter.byCreatedAtTo(request.createdAtTo);
     }
     return filter;
   }
