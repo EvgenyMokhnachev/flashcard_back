@@ -1,10 +1,10 @@
-import {EndpointBuilder} from "../HttpApiBuilder";
-import cardService from "../../domain/cards/CardService";
-import CardManageDto from "../../domain/cards/CardManageDto";
-import CardsFilterRequest from "./../requests/CardsFilterRequest";
-import Card from "./../../domain/cards/Card";
-import {cardRepository} from "../../database/DatabaseBeanConfig";
-import PaginationResponse from "../PaginationResponse";
+import {EndpointBuilder} from "../../HttpApiBuilder";
+import cardService from "../../../domain/cards/CardService";
+import CardManageDto from "../../../domain/cards/CardManageDto";
+import CardsFilterRequest from "../../requests/CardsFilterRequest";
+import Card from "../../../domain/cards/Card";
+import {cardRepository} from "../../../database/DatabaseBeanConfig";
+import PaginationResponse from "../../PaginationResponse";
 
 EndpointBuilder
   .POST("/cards/create", async (req, res) => {

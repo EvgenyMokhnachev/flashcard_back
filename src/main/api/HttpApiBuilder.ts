@@ -102,11 +102,11 @@ export class EndpointBuilder {
     }
   }
 
-  private static authHandler(req: Request, res: Response, next: any) {
+  private static async authHandler(req: Request, res: Response, next: any) {
     let token = req.get("Authorization");
 
     try {
-      req.userId = userService.checkToken(token);
+      req.userId = await userService.checkToken(token);
       if (next) {
         next();
       }

@@ -1,11 +1,13 @@
+import AuthTokenRepository from "../domain/auth/AuthTokenRepository";
+import AuthTokenRepositoryDynamoDB from "./dynamodb/authToken/AuthTokenRepository.DynamoDB";
 import UserRepository from "../domain/user/UserRepository";
-import UserRepositoryPgSql from "./pgsql/user/UserRepositoryPgSql";
-export const userRepository: UserRepository = new UserRepositoryPgSql();
-
+import UserRepositoryDynamoDB from "./dynamodb/user/UserRepository.DynamoDB";
 import CardRepository from "../domain/cards/CardRepository";
-import CardRepositoryPgSql from "./pgsql/cards/CardRepositoryPgSql";
-export const cardRepository: CardRepository = new CardRepositoryPgSql();
-
+import CardRepositoryDynamoDB from "./dynamodb/cards/CardRepository.DynamoDB";
 import FolderRepository from "../domain/folders/FolderRepository";
-import FoldersRepositoryPgSql from "./pgsql/folders/FoldersRepositoryPgSql";
-export const folderRepository: FolderRepository = new FoldersRepositoryPgSql();
+import FoldersRepositoryDynamoDB from "./dynamodb/folders/FoldersRepository.DynamoDB";
+
+export const authTokenRepository: AuthTokenRepository = new AuthTokenRepositoryDynamoDB();
+export const userRepository: UserRepository = new UserRepositoryDynamoDB();
+export const cardRepository: CardRepository = new CardRepositoryDynamoDB();
+export const folderRepository: FolderRepository = new FoldersRepositoryDynamoDB();

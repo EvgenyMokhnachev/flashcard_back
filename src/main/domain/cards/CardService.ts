@@ -22,7 +22,7 @@ class CardService {
       throw new CardNotFoundError();
     }
 
-    let card: Card|undefined = await cardRepository.findFirst(CardFilter.create().byId(id));
+    let card: Card|null = await cardRepository.findById(id);
     if (!card) {
       throw new CardNotFoundError(id);
     }
@@ -41,7 +41,7 @@ class CardService {
       throw new CardNotFoundError();
     }
 
-    let card: Card|undefined = await cardRepository.findFirst(CardFilter.create().byId(data.id));
+    let card: Card|null = await cardRepository.findById(data.id);
     if (!card) {
       throw new CardNotFoundError(data.id);
     }
@@ -53,7 +53,7 @@ class CardService {
     }
 
     if (data.folderId) {
-      let folder: Folder|undefined = await folderRepository.findById(data.folderId);
+      let folder: Folder|null = await folderRepository.findById(data.folderId);
       if (!folder) {
         throw new FolderNotFoundError(data.folderId);
       }
@@ -107,7 +107,7 @@ class CardService {
       throw new CardFolderEmptyError();
     }
 
-    const parentFolder: Folder | undefined = await folderRepository.findById(data.folderId);
+    const parentFolder: Folder | null = await folderRepository.findById(data.folderId);
     if (!parentFolder) {
       throw new FolderNotFoundError(data.folderId);
     }

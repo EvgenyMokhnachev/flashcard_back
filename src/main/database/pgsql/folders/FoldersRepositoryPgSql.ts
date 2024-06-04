@@ -33,9 +33,9 @@ export default class implements FolderRepository {
     }
   }
 
-  async findById(id: number): Promise<Folder | undefined> {
+  async findById(id: number): Promise<Folder | null> {
     let folders = await this.find(FoldersFilter.create().byId(id));
-    if (!folders || !folders.length) return;
+    if (!folders || !folders.length) return null;
     return folders[0];
   }
 

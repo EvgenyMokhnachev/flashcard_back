@@ -1,4 +1,4 @@
-class HttpErrorResponse<I> {
+class PaginationResponse<I> {
   items: I[];
   total?: number;
 
@@ -8,4 +8,4 @@ class HttpErrorResponse<I> {
   }
 }
 
-export default HttpErrorResponse;
+export default PaginationResponse;

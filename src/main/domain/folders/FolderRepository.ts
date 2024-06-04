@@ -2,8 +2,8 @@ import Folder from "./Folder";
 import FoldersFilter from "./FoldersFilter";
 
 export default interface FolderRepository {
-  save(card: Folder): Promise<Folder>
+  save(folder: Folder): Promise<Folder>
   find(filter: FoldersFilter): Promise<Folder[]>;
-  findById(id: number): Promise<Folder | undefined>;
+  findById(id: number): Promise<Folder | null>;
   delete(id: number): Promise<boolean>;
 }

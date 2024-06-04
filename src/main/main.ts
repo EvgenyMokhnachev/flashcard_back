@@ -1,4 +1,4 @@
-import "./api/controllers/ControllerMapper";
+import "./api/controllers/rest/ControllerMapper";
 
 import HttpApiBuilder from "./api/HttpApiBuilder";
 HttpApiBuilder.start();

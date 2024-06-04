@@ -7,7 +7,7 @@ import CardFilter from "../../../domain/cards/CardFilter";
 import CardRepository from "../../../domain/cards/CardRepository";
 import CardDifficultType from "../../../domain/cards/CardDifficultType";
 
-export default class implements CardRepository {
+export default class CardRepositoryPgSql implements CardRepository {
 
   private CardPgSqlRepository: Repository<CardPgSql>;
 
@@ -38,9 +38,9 @@ export default class implements CardRepository {
     );
   }
 
-  public async findFirst(filter: CardFilter): Promise<Card|undefined> {
-    let result = undefined;
-    let cards = await this.find(filter);
+  public async findById(id: number): Promise<Card|null> {
+    let result = null;
+    let cards = await this.find(CardFilter.create().byId(id));
     if (cards && cards.length) {
       result = cards[0];
     }

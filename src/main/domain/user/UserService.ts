@@ -1,4 +1,4 @@
-import {userRepository} from "../../database/DatabaseBeanConfig";
+import {userRepository, authTokenRepository} from "../../database/DatabaseBeanConfig";
 import User from "./User";
 import {AuthRequest} from "../../api/requests/AuthRequest";
 import UserFilter from "./UserFilter";
@@ -9,26 +9,37 @@ class AuthService {
 
   private authUsersMap: Map<string, number>  = new Map<string, number>();
 
-  public checkToken(token?: string): number {
+  public async checkToken(token?: string): Promise<number> {
     if (!token) {
       throw new Error("Token not found");
     }
 
     let userId = this.authUsersMap.get(token);
+
+    if (!userId) {
+      const authToken: AuthToken | null = await authTokenRepository.findOne(token);
+      if (authToken && authToken.userId) {
+        return authToken.userId;
+      }
+      throw new Error("Token not found");
+    }
+
     if (!userId) {
       throw new Error("Token not found");
     }
     return userId;
   }
 
-  private generateAuthToken(user: User): AuthToken | undefined {
-    if (!user || !user.id) return;
+  private async generateAuthToken(user: User): Promise<AuthToken |  null> {
+    if (!user || !user.id) return null;
     let token: string = randomUUID();
-    this.authUsersMap.set(token, user.id);
-    return new AuthToken(token, user.id);
+    const tokenObj = new AuthToken(token, user.id);
+    this.authUsersMap.set(tokenObj.token, tokenObj.userId);
+    await authTokenRepository.save(tokenObj);
+    return tokenObj;
   }
 
-  public async auth(authData: AuthRequest): Promise<AuthToken | undefined> {
+  public async auth(authData: AuthRequest): Promise<AuthToken | null | undefined> {
     if (!authData.email) {
       throw new Error("Email is required");
     }
@@ -42,19 +53,19 @@ class AuthService {
     if (users && users.length) {
       let foundUser = users.find(user => user.pass === authData.pass);
       if (foundUser) {
-        return this.generateAuthToken(foundUser);
+        return await this.generateAuthToken(foundUser);
       }
 
       if (!foundUser) {
         throw Error("User password doesn't match");
       }
     } else {
-      let userToRegister = new User();
-      userToRegister.email = authData.email;
-      userToRegister.pass = authData.pass;
+      let userToRegister = new User(
+        undefined, authData.email, authData.pass
+      );
       let registeredUser = await userRepository.save(userToRegister);
 
-      return this.generateAuthToken(registeredUser);
+      return await this.generateAuthToken(registeredUser);
     }
   }
 

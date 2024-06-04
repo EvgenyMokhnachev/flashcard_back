@@ -1,15 +1,14 @@
-import {EndpointBuilder} from "../HttpApiBuilder";
-import {folderRepository} from "../../database/DatabaseBeanConfig";
-import PaginationResponse from "../PaginationResponse";
-import FolderManageDto from "../../domain/folders/FolderManageDto";
-import foldersService from "../../domain/folders/FoldersService";
-import FoldersFilterRequest from "../requests/FoldersFilterRequest";
-import FoldersFilter from "../../domain/folders/FoldersFilter";
-import Folder from "../../domain/folders/Folder";
-import foldersTreeService from "../../domain/folders/FoldersTreeService";
-import FolderTree from "../../domain/folders/FolderTree";
-import folderTreeResponseMapper from "../responses/FolderTreeResponseMapper";
-import {FolderTreeResponse} from "../responses/FolderTreeResponse";
+import {EndpointBuilder} from "../../HttpApiBuilder";
+import {folderRepository} from "../../../database/DatabaseBeanConfig";
+import PaginationResponse from "../../PaginationResponse";
+import FolderManageDto from "../../../domain/folders/FolderManageDto";
+import foldersService from "../../../domain/folders/FoldersService";
+import FoldersFilterRequest from "../../requests/FoldersFilterRequest";
+import Folder from "../../../domain/folders/Folder";
+import foldersTreeService from "../../../domain/folders/FoldersTreeService";
+import FolderTree from "../../../domain/folders/FolderTree";
+import folderTreeResponseMapper from "../../responses/FolderTreeResponseMapper";
+import {FolderTreeResponse} from "../../responses/FolderTreeResponse";
 
 EndpointBuilder
   .POST("/folders/create", async (req, res) => {
