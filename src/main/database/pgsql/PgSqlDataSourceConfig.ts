@@ -12,7 +12,7 @@ import {add_bookmarked_column_in_cards_table_1600000000007} from "./migrations/1
 
 export default new DataSource({
   type: "postgres",
-  host: "backend-db",
+  host: "46.101.171.139",
   port: 5432,
   username: "root",
   password: "admin",

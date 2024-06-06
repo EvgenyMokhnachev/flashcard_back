@@ -98,7 +98,7 @@ export default class CardRepositoryDynamoDB implements CardRepository {
 		if (filter.bookmarked === true || filter.bookmarked === false) filterExpression.push('bookmarked = :bookmarkedFilterVal');
 		if (filter.createdAtFrom) filterExpression.push(`createdAt >= :createdAt${filter.createdAtFrom.getTime()}`);
 		if (filter.createdAtTo) filterExpression.push(`createdAt <= :createdAt${filter.createdAtTo.getTime()}`);
-
+		const queryStr = filterExpression.filter(i => !!i).map(i => `(${i})`).join(' AND ');
 
 		// Create ExpressionAttributeValues
 		const expressionAttributeValues = {
@@ -118,7 +118,7 @@ export default class CardRepositoryDynamoDB implements CardRepository {
 
 		const params: ScanCommandInput = {
 			TableName: tableName,
-			FilterExpression: filterExpression.filter(i => !!i).join(' AND '),
+			FilterExpression: queryStr,
 			ExpressionAttributeValues: expressionAttributeValues
 		};
 

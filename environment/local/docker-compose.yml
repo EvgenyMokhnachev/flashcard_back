@@ -32,6 +32,8 @@ services:
     restart: unless-stopped
     networks:
       - flashcards_network
+    ports:
+      - 5432:5432
     volumes:
       - pgsql_cache:/var/lib/postgresql/data
     environment:

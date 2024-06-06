@@ -1,10 +1,11 @@
 {
     "main": "dist/built.js",
-
     "scripts": {
-        "build": "esbuild src/main/api/controllers/lambda/LambdaHandlersMapper.ts --bundle --minify --platform=node --target=node14 --outfile=dist/built.js"
+        "build": "esbuild src/main/api/controllers/lambda/LambdaHandlersMapper.ts --bundle --minify --platform=node --target=node14 --outfile=dist/built.js",
+        "copyUsers": "esbuild src/main/copyUsers.ts --bundle --minify --platform=node --target=node14 --outfile=dist/copyUsers.js",
+        "copyFolders": "esbuild src/main/copyFolders.ts --bundle --minify --platform=node --target=node14 --outfile=dist/copyFolders.js",
+        "copyCards": "esbuild src/main/copyCards.ts --bundle --minify --platform=node --target=node14 --outfile=dist/copyCards.js"
     },
-
     "devDependencies": {
         "@types/aws-lambda": "^8.10.138",
         "@types/cors": "^2.8.12",

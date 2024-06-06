@@ -38,6 +38,7 @@ export default class UserRepositoryDynamoDB implements UserRepository {
 		const filterExpression = [];
 		filterExpression.push((filter.ids || []).map((id, index) => `id = :id${index}`).join(' OR '));
 		filterExpression.push((filter.emails || []).map((email, index) => `email = :email${index}`).join(' OR '));
+		const queryStr = filterExpression.filter(i => !!i).map(i => `(${i})`).join(' AND ');
 
 		// Create ExpressionAttributeValues
 		const expressionAttributeValues = {
@@ -47,7 +48,7 @@ export default class UserRepositoryDynamoDB implements UserRepository {
 
 		const params: ScanCommandInput = {
 			TableName: tableName,
-			FilterExpression: filterExpression.filter(i => !!i).join(' AND '),
+			FilterExpression: queryStr,
 			ExpressionAttributeValues: expressionAttributeValues
 		};
 

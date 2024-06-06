@@ -79,6 +79,7 @@ export default class FoldersRepositoryDynamoDB implements FolderRepository {
 		if (filter.onlyRoot) {
 			filterExpression.push('attribute_not_exists(parentId) OR parentId = :emptyString OR parentId = :nulValue');
 		}
+		const queryStr = filterExpression.filter(i => !!i).map(i => `(${i})`).join(' AND ');
 
 		// Create ExpressionAttributeValues
 		const expressionAttributeValues = {
@@ -99,11 +100,11 @@ export default class FoldersRepositoryDynamoDB implements FolderRepository {
 
 		const params: ScanCommandInput = {
 			TableName: tableName,
-			FilterExpression: filterExpression.filter(i => !!i).join(' AND '),
+			FilterExpression: queryStr,
 			ExpressionAttributeValues: expressionAttributeValues
 		};
 
-		const data: ScanCommandOutput = await client.send(new ScanCommand(params));
+		const data: ScanCommandOutput = await client.send(new ScanCommand(params), {requestTimeout: 30000});
 		return (data.Items || []).map(responseItem => {
 			const id: number | undefined = responseItem?.id?.N ? parseInt(responseItem?.id?.N) : undefined;
 			const userId: number | undefined = responseItem?.userId?.N ? parseInt(responseItem?.userId?.N) : undefined;
