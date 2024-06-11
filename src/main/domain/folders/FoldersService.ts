@@ -39,7 +39,7 @@ class FoldersService {
     return await folderRepository.save(item);
   }
 
-  private async getAllParentIds(folder?: Folder, parentIds?: number[]): Promise<number[]> {
+  private async getAllParentIds(folder?: Folder | null, parentIds?: number[]): Promise<number[]> {
     const result = parentIds ? [...parentIds] : [];
     if (!folder) return result;
 
@@ -65,13 +65,13 @@ class FoldersService {
       throw new FolderNotFoundError(updateData.id);
     }
 
-    let folder: Folder | undefined = await folderRepository.findById(updateData.id);
+    let folder: Folder | null = await folderRepository.findById(updateData.id);
     if (!folder) {
       throw new FolderNotFoundError(updateData.id);
     }
 
     if (updateData.parentId) {
-      let parentFolder: Folder | undefined = await folderRepository.findById(updateData.parentId);
+      let parentFolder: Folder | null = await folderRepository.findById(updateData.parentId);
       parentFolder?.parentId
       if (!parentFolder) {
         throw new FolderNotFoundError(updateData.parentId);

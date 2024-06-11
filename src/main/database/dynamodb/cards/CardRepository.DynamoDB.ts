@@ -13,6 +13,7 @@ import {
 	ScanCommandOutput
 } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, NumberValue, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { cardsRedisRepository } from "../../redis/CardsRedisRepository";
 
 const client = new DynamoDBClient({});
 const dynamo = DynamoDBDocumentClient.from(client);
@@ -21,6 +22,8 @@ const tableName = "flashcards_cards";
 export default class CardRepositoryDynamoDB implements CardRepository {
 
 	async delete(id: number): Promise<boolean> {
+		await cardsRedisRepository.clearCardsCache();
+
 		const params: DeleteItemCommandInput = {
 			TableName: tableName,
 			Key: {
@@ -38,6 +41,8 @@ export default class CardRepositoryDynamoDB implements CardRepository {
 	}
 
 	public async save(card: Card): Promise<Card> {
+		await cardsRedisRepository.clearCardsCache();
+
 		if (!card.createdAt) {
 			card.createdAt = new Date();
 		}
@@ -64,6 +69,11 @@ export default class CardRepositoryDynamoDB implements CardRepository {
 	}
 
 	public async findById(id: number): Promise<Card | null> {
+		const cache = await cardsRedisRepository.getCardById(id);
+		if (cache) {
+			return cache;
+		}
+
 		const params = new GetItemCommand({
 			TableName: tableName,
 			Key: {
@@ -73,7 +83,7 @@ export default class CardRepositoryDynamoDB implements CardRepository {
 
 		const data: GetItemCommandOutput = await client.send(params);
 
-		return (() => {
+		const card = (() => {
 			const id: number | undefined = data.Item?.id?.N ? parseInt(data.Item?.id?.N) : undefined;
 			const folderId: number | undefined = data.Item?.folderId?.N ? parseInt(data.Item?.folderId?.N) : undefined;
 			const userId: number | undefined = data.Item?.userId?.N ? parseInt(data.Item?.userId?.N) : undefined;
@@ -87,9 +97,20 @@ export default class CardRepositoryDynamoDB implements CardRepository {
 				id, folderId, userId, frontSide, backSide, difficult, difficultChangeTime, createdAt, bookmarked
 			) : null;
 		})();
+
+		if (card) {
+			await cardsRedisRepository.setCardById(id, card);
+		}
+
+		return card;
 	}
 
 	public async find(filter: CardFilter): Promise<Card[]> {
+		const cache = await cardsRedisRepository.getCardsCacheByFilter(filter);
+		if (cache) {
+			return cache;
+		}
+
 		const filterExpression = [];
 		filterExpression.push((filter.ids || []).map((id, index) => `id = :id${index}`).join(' OR '));
 		filterExpression.push((filter.userIds || []).map((id, index) => `userId = :userId${index}`).join(' OR '));
@@ -124,7 +145,7 @@ export default class CardRepositoryDynamoDB implements CardRepository {
 
 		const data: ScanCommandOutput = await client.send(new ScanCommand(params));
 
-		return (data.Items || [])
+		const cards = (data.Items || [])
 			.map(responseItem => {
 				// throw responseItem;
 				const id: number | undefined = responseItem?.id?.N ? parseInt(responseItem?.id?.N) : undefined;
@@ -141,6 +162,12 @@ export default class CardRepositoryDynamoDB implements CardRepository {
 				) : null;
 			})
 			.filter(i => !!i) as Card[];
+
+		if (cards) {
+			await cardsRedisRepository.setCardsCacheByFilter(filter, cards);
+		}
+
+		return cards;
 	}
 
 }

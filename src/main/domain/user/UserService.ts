@@ -4,6 +4,7 @@ import {AuthRequest} from "../../api/requests/AuthRequest";
 import UserFilter from "./UserFilter";
 import {randomUUID} from "crypto";
 import AuthToken from "../auth/AuthToken";
+import { userTokenRedisRepository } from "../../database/redis/UserTokenRedisRepository";
 
 class AuthService {
 
@@ -17,16 +18,27 @@ class AuthService {
     let userId = this.authUsersMap.get(token);
 
     if (!userId) {
+      const userIdFromRedis = await userTokenRedisRepository.getUserAuthToken(token);
+      if (userIdFromRedis) {
+        userId = userIdFromRedis;
+      }
+    }
+
+    if (!userId) {
       const authToken: AuthToken | null = await authTokenRepository.findOne(token);
       if (authToken && authToken.userId) {
-        return authToken.userId;
+        userId = authToken.userId;
       }
-      throw new Error("Token not found");
     }
 
     if (!userId) {
       throw new Error("Token not found");
     }
+
+    this.authUsersMap.set(token, userId);
+
+    await userTokenRedisRepository.setUserAuthToken(token, userId);
+
     return userId;
   }
 
@@ -35,6 +47,7 @@ class AuthService {
     let token: string = randomUUID();
     const tokenObj = new AuthToken(token, user.id);
     this.authUsersMap.set(tokenObj.token, tokenObj.userId);
+    await userTokenRedisRepository.setUserAuthToken(tokenObj.token, tokenObj.userId);
     await authTokenRepository.save(tokenObj);
     return tokenObj;
   }

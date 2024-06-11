@@ -3,6 +3,7 @@ import { DynamoDBDocumentClient, NumberValue, PutCommand } from "@aws-sdk/lib-dy
 import UserRepository from "../../../domain/user/UserRepository";
 import User from "../../../domain/user/User";
 import UserFilter from "../../../domain/user/UserFilter";
+import { usersRedisRepository } from "../../redis/UsersRedisRepository";
 
 const client = new DynamoDBClient({});
 const dynamo = DynamoDBDocumentClient.from(client);
@@ -22,6 +23,7 @@ export default class UserRepositoryDynamoDB implements UserRepository {
 				},
 			})
 		);
+		await usersRedisRepository.clearUsersCache();
 		return user;
 	}
 
@@ -35,6 +37,11 @@ export default class UserRepositoryDynamoDB implements UserRepository {
 	}
 
 	public async find(filter: UserFilter): Promise<User[]> {
+		const cache = await usersRedisRepository.getUsersCacheByFilter(filter);
+		if (cache) {
+			return cache;
+		}
+
 		const filterExpression = [];
 		filterExpression.push((filter.ids || []).map((id, index) => `id = :id${index}`).join(' OR '));
 		filterExpression.push((filter.emails || []).map((email, index) => `email = :email${index}`).join(' OR '));
@@ -53,10 +60,17 @@ export default class UserRepositoryDynamoDB implements UserRepository {
 		};
 
 		const data: ScanCommandOutput = await client.send(new ScanCommand(params));
-		return (data.Items || []).map(responseItem => new User(
+
+		const users = (data.Items || []).map(responseItem => new User(
 			responseItem?.id?.N ? parseInt(responseItem?.id?.N) : undefined,
 			responseItem?.email?.S,
 			responseItem?.pass?.S
 		));
+
+		if (users) {
+			await usersRedisRepository.setUsersCacheByFilter(filter, users);
+		}
+
+		return users;
 	}
 }

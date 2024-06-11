@@ -8,9 +8,16 @@ import {
 	UpdateFolderHandler
 } from "./Folders.Handlers";
 import { GetUsersHandler } from "./Users.Handler";
-
+import { LambdaAuthHandler } from "../../LambdaAuthHandler";
 
 export const handler = async (event: any): Promise<any> => {
+	// try {
+	// 	const userId = await LambdaAuthHandler(event);
+	// 	return userId;
+	// } catch (e) {
+	// 	return 'error: ' + (e as any).message;
+	// }
+
 	try {
 		switch (event.requestContext.http.path) {
 			case '/auth':
