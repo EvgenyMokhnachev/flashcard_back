@@ -4,7 +4,9 @@
         "build": "esbuild src/main/api/controllers/lambda/LambdaHandlersMapper.ts --bundle --minify --platform=node --target=node14 --outfile=dist/built.js",
         "copyUsers": "esbuild src/main/copyUsers.ts --bundle --minify --platform=node --target=node14 --outfile=dist/copyUsers.js",
         "copyFolders": "esbuild src/main/copyFolders.ts --bundle --minify --platform=node --target=node14 --outfile=dist/copyFolders.js",
-        "copyCards": "esbuild src/main/copyCards.ts --bundle --minify --platform=node --target=node14 --outfile=dist/copyCards.js"
+        "copyCards": "esbuild src/main/copyCards.ts --bundle --minify --platform=node --target=node14 --outfile=dist/copyCards.js",
+        "buildNodeJs": "esbuild src/main/main.ts --bundle --minify --platform=node --target=node14 --outfile=dist/built.js",
+        "buildWithAWSCreds": "export AWS_DYNAMO_DB_ACCESS_KEY_ID=\"\" && export AWS_DYNAMO_DB_ACCESS_KEY_SECRET=\"\" && rm -rf ./dist && npm run buildNodeJs && node ./dist/built.js"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.138",

@@ -85,7 +85,7 @@ class CardsRedisRepository {
 	}
 
 	public async clearCardsCache() {
-		await redisRepository.deleteByPattern('cards:');
+		await redisRepository.deleteByPattern('cards:*');
 	}
 
 }

@@ -3,17 +3,21 @@ import { DynamoDBDocumentClient, NumberValue, PutCommand } from "@aws-sdk/lib-dy
 import AuthTokenRepository from "../../../domain/auth/AuthTokenRepository";
 import AuthToken from "../../../domain/auth/AuthToken";
 import { randomUUID } from "crypto";
-import { AttributeValue } from "aws-lambda";
 
-const client = new DynamoDBClient({});
-const dynamo = DynamoDBDocumentClient.from(client);
 const tableName = "flashcards_auth_tokens";
 
 export default class AuthTokenRepositoryDynamoDB implements AuthTokenRepository {
+	client: DynamoDBClient;
+	dynamo: DynamoDBDocumentClient;
+
+	constructor(client: DynamoDBClient, dynamo: DynamoDBDocumentClient) {
+		this.client = client;
+		this.dynamo = dynamo;
+	}
 
 	public async save(authToken: AuthToken): Promise<AuthToken> {
 		authToken.token = authToken.token ? authToken.token : randomUUID();
-		await dynamo.send(
+		await this.dynamo.send(
 			new PutCommand({
 				TableName: tableName,
 				Item: {
@@ -33,7 +37,7 @@ export default class AuthTokenRepositoryDynamoDB implements AuthTokenRepository 
 			}
 		});
 
-		const data: GetItemCommandOutput = await client.send(params);
+		const data: GetItemCommandOutput = await this.client.send(params);
 
 		return (() => {
 			const token: string | undefined = data.Item?.token?.S ? data.Item?.token?.S + '' : undefined;

@@ -85,7 +85,7 @@ class UsersRedisRepository {
 	}
 
 	public async clearUsersCache() {
-		await redisRepository.deleteByPattern('users:');
+		await redisRepository.deleteByPattern('users:*');
 	}
 
 }

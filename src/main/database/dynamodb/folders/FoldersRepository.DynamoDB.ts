@@ -12,17 +12,21 @@ import {
 	ScanCommandOutput
 } from "@aws-sdk/client-dynamodb";
 import { DeleteItemCommandInput } from "@aws-sdk/client-dynamodb/dist-types/commands/DeleteItemCommand";
-import { foldersRedisRepository } from "../../redis/FoldersRedisRepository";
 
-const client = new DynamoDBClient({});
-const dynamo = DynamoDBDocumentClient.from(client);
 const tableName = "flashcards_folders";
 
 export default class FoldersRepositoryDynamoDB implements FolderRepository {
+	client: DynamoDBClient;
+	dynamo: DynamoDBDocumentClient;
+
+	constructor(client: DynamoDBClient, dynamo: DynamoDBDocumentClient) {
+		this.client = client;
+		this.dynamo = dynamo;
+	}
 
 	public async save(folder: Folder): Promise<Folder> {
 		folder.id = folder.id ? folder.id : parseInt(new Date().getTime() + '' + Math.round(Math.random() * 10))
-		await dynamo.send(
+		await this.dynamo.send(
 			new PutCommand({
 				TableName: tableName,
 				Item: {
@@ -33,7 +37,6 @@ export default class FoldersRepositoryDynamoDB implements FolderRepository {
 				},
 			})
 		);
-		await foldersRedisRepository.clearFoldersCache();
 		return folder;
 	}
 
@@ -47,20 +50,14 @@ export default class FoldersRepositoryDynamoDB implements FolderRepository {
 
 		try {
 			const command = new DeleteItemCommand(params);
-			await client.send(command);
-			await foldersRedisRepository.clearFoldersCache();
+			await this.client.send(command);
 			return true;
 		} catch (error) {
-			return false;
+			throw error;
 		}
 	}
 
 	async findById(id: number): Promise<Folder | null> {
-		const cache = await foldersRedisRepository.getFolderById(id);
-		if (cache) {
-			return cache;
-		}
-
 		const params = new GetItemCommand({
 			TableName: tableName,
 			Key: {
@@ -68,29 +65,18 @@ export default class FoldersRepositoryDynamoDB implements FolderRepository {
 			}
 		});
 
-		const data: GetItemCommandOutput = await client.send(params);
+		const data: GetItemCommandOutput = await this.client.send(params);
 
-		const folder = (() => {
+		return (() => {
 			const name: string | undefined = data.Item?.name?.S ? data.Item?.name?.S + '' : undefined;
 			const id: number | undefined = data.Item?.id?.N ? parseInt(data.Item?.id?.N) : undefined;
 			const parentId: number | undefined = data.Item?.parentId?.N ? parseInt(data.Item?.parentId?.N) : undefined;
 			const userId: number | undefined = data.Item?.userId?.N ? parseInt(data.Item?.userId?.N) : undefined;
 			return data.Item ? new Folder(id, name, parentId, userId) : null
 		})();
-
-		if (folder) {
-			await foldersRedisRepository.setFolderById(id, folder);
-		}
-
-		return folder;
 	}
 
 	public async find(filter: FoldersFilter): Promise<Folder[]> {
-		const cache = await foldersRedisRepository.getFoldersCacheByFilter(filter);
-		if (cache) {
-			return cache;
-		}
-
 		const filterExpression = [];
 		filterExpression.push((filter.ids || []).map((id, index) => `id = :id${index}`).join(' OR '));
 		filterExpression.push((filter.parentIds || []).map((id, index) => `parentId = :parentId${index}`).join(' OR '));
@@ -123,9 +109,9 @@ export default class FoldersRepositoryDynamoDB implements FolderRepository {
 			ExpressionAttributeValues: expressionAttributeValues
 		};
 
-		const data: ScanCommandOutput = await client.send(new ScanCommand(params), {requestTimeout: 30000});
+		const data: ScanCommandOutput = await this.client.send(new ScanCommand(params), {requestTimeout: 30000});
 
-		const folders = (data.Items || []).map(responseItem => {
+		return (data.Items || []).map(responseItem => {
 			const id: number | undefined = responseItem?.id?.N ? parseInt(responseItem?.id?.N) : undefined;
 			const userId: number | undefined = responseItem?.userId?.N ? parseInt(responseItem?.userId?.N) : undefined;
 			const parentId: number | undefined | null =
@@ -138,12 +124,6 @@ export default class FoldersRepositoryDynamoDB implements FolderRepository {
 				id, name, parentId, userId
 			);
 		});
-
-		if (folders) {
-			await foldersRedisRepository.setFoldersCacheByFilter(filter, folders);
-		}
-
-		return folders;
 	}
 
 }

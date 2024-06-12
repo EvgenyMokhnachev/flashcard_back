@@ -85,7 +85,7 @@ class FoldersRedisRepository {
 	}
 
 	public async clearFoldersCache() {
-		await redisRepository.deleteByPattern('folders:');
+		await redisRepository.deleteByPattern('folders:*');
 	}
 
 }

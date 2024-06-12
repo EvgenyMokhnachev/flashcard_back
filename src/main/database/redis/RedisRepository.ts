@@ -5,7 +5,7 @@ class RedisRepository {
 
 	constructor() {
 		this.client = createClient({
-			url: 'rediss://flashcards-cache-r4iryk.serverless.euc1.cache.amazonaws.com:6379'
+			url: 'rediss://XXX:6379'
 		});
 	}
 

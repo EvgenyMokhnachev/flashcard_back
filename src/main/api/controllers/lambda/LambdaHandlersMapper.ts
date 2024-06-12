@@ -56,7 +56,8 @@ export const handler = async (event: any): Promise<any> => {
 			statusCode: 500,
 			body: JSON.stringify({
 				message: 'Internal Server Error',
-				error: (error as any)
+				error: JSON.stringify(error as any),
+				errorMessage: (error as any)?.message || '',
 			})
 		};
 	}

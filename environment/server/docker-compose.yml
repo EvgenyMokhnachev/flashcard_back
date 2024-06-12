@@ -1,0 +1,13 @@
+services:
+  backend_builder:
+    container_name: ${COMPOSE_PROJECT_NAME}_backend
+    restart: unless-stopped
+    build:
+      context: ./../../
+      dockerfile: ./environment/server/Dockerfile
+      args:
+        - AWS_DYNAMO_DB_ACCESS_KEY_ID:${AWS_DYNAMO_DB_ACCESS_KEY_ID}
+        - AWS_DYNAMO_DB_ACCESS_KEY_SECRET=${AWS_DYNAMO_DB_ACCESS_KEY_SECRET}
+    entrypoint: /entrypoint-backend.sh .
+    ports:
+    - 3000:3000

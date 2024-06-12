@@ -3,17 +3,21 @@ import { DynamoDBDocumentClient, NumberValue, PutCommand } from "@aws-sdk/lib-dy
 import UserRepository from "../../../domain/user/UserRepository";
 import User from "../../../domain/user/User";
 import UserFilter from "../../../domain/user/UserFilter";
-import { usersRedisRepository } from "../../redis/UsersRedisRepository";
 
-const client = new DynamoDBClient({});
-const dynamo = DynamoDBDocumentClient.from(client);
 const tableName = "flashcards_users";
 
 export default class UserRepositoryDynamoDB implements UserRepository {
+	client: DynamoDBClient;
+	dynamo: DynamoDBDocumentClient;
+
+	constructor(client: DynamoDBClient, dynamo: DynamoDBDocumentClient) {
+		this.client = client;
+		this.dynamo = dynamo;
+	}
 
 	public async save(user: User): Promise<User> {
 		user.id = user.id ? user.id : parseInt(new Date().getTime() + '' + Math.round(Math.random() * 10))
-		await dynamo.send(
+		await this.dynamo.send(
 			new PutCommand({
 				TableName: tableName,
 				Item: {
@@ -23,7 +27,6 @@ export default class UserRepositoryDynamoDB implements UserRepository {
 				},
 			})
 		);
-		await usersRedisRepository.clearUsersCache();
 		return user;
 	}
 
@@ -37,11 +40,6 @@ export default class UserRepositoryDynamoDB implements UserRepository {
 	}
 
 	public async find(filter: UserFilter): Promise<User[]> {
-		const cache = await usersRedisRepository.getUsersCacheByFilter(filter);
-		if (cache) {
-			return cache;
-		}
-
 		const filterExpression = [];
 		filterExpression.push((filter.ids || []).map((id, index) => `id = :id${index}`).join(' OR '));
 		filterExpression.push((filter.emails || []).map((email, index) => `email = :email${index}`).join(' OR '));
@@ -59,18 +57,12 @@ export default class UserRepositoryDynamoDB implements UserRepository {
 			ExpressionAttributeValues: expressionAttributeValues
 		};
 
-		const data: ScanCommandOutput = await client.send(new ScanCommand(params));
+		const data: ScanCommandOutput = await this.client.send(new ScanCommand(params));
 
-		const users = (data.Items || []).map(responseItem => new User(
+		return (data.Items || []).map(responseItem => new User(
 			responseItem?.id?.N ? parseInt(responseItem?.id?.N) : undefined,
 			responseItem?.email?.S,
 			responseItem?.pass?.S
 		));
-
-		if (users) {
-			await usersRedisRepository.setUsersCacheByFilter(filter, users);
-		}
-
-		return users;
 	}
 }

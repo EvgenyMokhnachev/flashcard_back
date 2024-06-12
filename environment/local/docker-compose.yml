@@ -9,10 +9,7 @@ services:
     volumes:
       - ./../../:/app
     entrypoint: /entrypoint-backend.sh .
-    networks:
-      - flashcards_network
     ports:
-    - 9222:9222
     - 3000:3000
 
   node:
