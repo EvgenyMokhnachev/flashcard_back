@@ -5,9 +5,10 @@ services:
     build:
       context: ./../../
       dockerfile: ./environment/server/Dockerfile
-      args:
-        - AWS_DYNAMO_DB_ACCESS_KEY_ID:${AWS_DYNAMO_DB_ACCESS_KEY_ID}
-        - AWS_DYNAMO_DB_ACCESS_KEY_SECRET=${AWS_DYNAMO_DB_ACCESS_KEY_SECRET}
+    environment:
+      - AWS_DYNAMO_DB_ACCESS_KEY_ID:${AWS_DYNAMO_DB_ACCESS_KEY_ID}
+      - AWS_DYNAMO_DB_ACCESS_KEY_SECRET=${AWS_DYNAMO_DB_ACCESS_KEY_SECRET}
+    env_file: ./../../.env
     entrypoint: /entrypoint-backend.sh .
     ports:
     - 3000:3000

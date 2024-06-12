@@ -2,9 +2,6 @@ FROM node:18.17.0
 
 RUN npm install --global -y esbuild
 
-ARG AWS_DYNAMO_DB_ACCESS_KEY_ID
-ARG AWS_DYNAMO_DB_ACCESS_KEY_SECRET
-
 WORKDIR /app
 
 COPY ./environment/server/entrypoint-backend.sh /entrypoint-backend.sh
