@@ -11,8 +11,6 @@ COPY ./environment/server/entrypoint-backend.sh /entrypoint-backend.sh
 RUN chmod +x /entrypoint-backend.sh
 
 COPY ./package.json /app/package.json
-COPY ./package-lock.json /app/package-lock.json
-
 RUN npm i
 
 COPY ./ /app
