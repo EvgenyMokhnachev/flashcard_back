@@ -190,11 +190,11 @@ func (s FolderService) DeleteFolder(folderId *int, actorUserId *int) (bool, erro
 		return false, err
 	}
 
-	if childFolders != nil && (len(childFolders) > 0) {
-		for _, childFolder := range childFolders {
+	if childFolders != nil && (len(*childFolders) > 0) {
+		for _, childFolder := range *childFolders {
 			childFolder.ParentId = nil
 			// TODO тут сделать транзакцию
-			_, err := s.folderRepository.Update(&childFolder)
+			_, err := s.folderRepository.Update(childFolder)
 			if err != nil {
 				return false, err
 			}

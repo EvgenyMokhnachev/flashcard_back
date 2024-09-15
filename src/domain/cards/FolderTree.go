@@ -1,7 +1,7 @@
 package cards
 
 type FolderTree struct {
-	Folder
+	*Folder
 	Parent   *FolderTree   `json:"parent"`
 	Children *[]FolderTree `json:"children"`
 }

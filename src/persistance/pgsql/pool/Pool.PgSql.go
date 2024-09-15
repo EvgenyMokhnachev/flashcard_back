@@ -3,8 +3,8 @@ package pgsql
 import (
 	"context"
 	"database/sql"
+	"flashcards_backend/src/utils"
 	_ "github.com/lib/pq"
-	"os"
 	"strings"
 	"time"
 )
@@ -39,11 +39,13 @@ func ReleasePgSqlConn(conn *sql.DB) {
 }
 
 func CreatePgSqlConn() (*sql.DB, error) {
-	host := os.Getenv("DATABASE_HOST")
-	port := os.Getenv("DATABASE_PORT")
-	username := os.Getenv("DATABASE_USER")
-	userpass := os.Getenv("DATABASE_PASS")
-	dbname := os.Getenv("DATABASE_NAME")
+	env := utils.GetENV()
+
+	host := env.DATABASE_HOST
+	port := env.DATABASE_PORT
+	username := env.DATABASE_USER
+	userpass := env.DATABASE_PASS
+	dbname := env.DATABASE_NAME
 
 	connStr := "postgres://" + username + ":" + userpass + "@" + host + ":" + port + "/" + dbname + "?sslmode=disable"
 

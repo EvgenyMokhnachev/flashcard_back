@@ -119,7 +119,7 @@ func (FolderRepositoryPgSql) Update(folder *cards.Folder) (*cards.Folder, error)
 	return folder, err
 }
 
-func (FolderRepositoryPgSql) Find(filter cards.FolderFilter) ([]cards.Folder, error) {
+func (FolderRepositoryPgSql) Find(filter cards.FolderFilter) (*[]*cards.Folder, error) {
 	var sqlQuery = "SELECT id, name, parent_id, user_id FROM folders"
 
 	var whereAndCases = make([]string, 0)
@@ -253,17 +253,17 @@ func (FolderRepositoryPgSql) Find(filter cards.FolderFilter) ([]cards.Folder, er
 		return nil, err
 	}
 
-	folders := make([]cards.Folder, 0, 1)
+	folders := make([]*cards.Folder, 0, 1)
 	for query.Next() {
 		folder := new(cards.Folder)
 		err := query.Scan(&folder.Id, &folder.Name, &folder.ParentId, &folder.UserId)
 		if err != nil {
 			return nil, err
 		}
-		folders = append(folders, *folder)
+		folders = append(folders, folder)
 	}
 
-	return folders, nil
+	return &folders, nil
 }
 
 func (FolderRepositoryPgSql) FindById(folderId *int) (*cards.Folder, error) {
@@ -294,7 +294,7 @@ func (FolderRepositoryPgSql) FindById(folderId *int) (*cards.Folder, error) {
 	return folder, nil
 }
 
-func (r FolderRepositoryPgSql) FindByParentId(parentFolderId *int) (*[]cards.Folder, error) {
+func (r FolderRepositoryPgSql) FindByParentId(parentFolderId *int) (*[]*cards.Folder, error) {
 	if parentFolderId == nil {
 		return nil, errors.New("can't find folder by provided parent ID is nil")
 	}
@@ -304,7 +304,7 @@ func (r FolderRepositoryPgSql) FindByParentId(parentFolderId *int) (*[]cards.Fol
 		return nil, err
 	}
 
-	return &folders, nil
+	return folders, nil
 }
 
 func (FolderRepositoryPgSql) Delete(folderId *int) (bool, error) {

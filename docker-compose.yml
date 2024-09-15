@@ -10,6 +10,8 @@ services:
           POSTGRES_PASSWORD: ${DATABASE_PASS}
           POSTGRES_DB: ${DATABASE_NAME}
           PGDATA: /var/lib/postgresql/data/pgdata
+        ports:
+          - 5432:5432
 
     golang:
       container_name: flashcards_golang

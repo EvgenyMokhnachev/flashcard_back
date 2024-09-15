@@ -3,17 +3,16 @@ package main
 import (
 	"flashcards_backend/src/persistance/pgsql"
 	"flashcards_backend/src/presentation"
+	"flashcards_backend/src/utils"
 	"fmt"
 	"net/http"
-	"os"
 )
 
 func main() {
-	pgsql.RunMigrations()
+	// check environment variables
+	env := utils.GetENV()
 
-	//dump.StartUsersDump()
-	//dump.StartFoldersDump()
-	//dump.StartCardsDump()
+	pgsql.RunMigrations()
 
 	// Регистрация обработчиков
 	http.HandleFunc("/api/auth", func(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +29,7 @@ func main() {
 	})
 
 	// Запуск сервера
-	serverPort := os.Getenv("GOLANG_SERVER_PORT")
+	serverPort := env.GOLANG_SERVER_PORT
 
 	if serverPort == "" {
 		panic("GOLANG_SERVER_PORT environment variable not set")

@@ -69,7 +69,7 @@ func foldersGet(w http.ResponseWriter, r *http.Request, userId *int) {
 		totalResponse = *payload.Limit
 	}
 
-	json.NewEncoder(w).Encode(PaginationResponse[cards.Folder]{Items: result, Total: totalResponse})
+	json.NewEncoder(w).Encode(PaginationResponse[*cards.Folder]{Items: *result, Total: totalResponse})
 }
 
 func foldersTree(w http.ResponseWriter, r *http.Request, userId *int) {
@@ -101,7 +101,7 @@ func foldersTree(w http.ResponseWriter, r *http.Request, userId *int) {
 		totalResponse = *payload.Limit
 	}
 
-	jsonResult, err := json.Marshal(PaginationResponse[cards.FolderTree]{Items: result, Total: totalResponse})
+	jsonResult, err := json.Marshal(PaginationResponse[*cards.FolderTree]{Items: *result, Total: totalResponse})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
