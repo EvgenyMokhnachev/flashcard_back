@@ -187,9 +187,6 @@ func (CardRepositoryPgSql) Find(filter cards.CardFilter) ([]cards.Card, error) {
 	if filter.DifficultTypes != nil {
 		argsEstimatedCount += len(*filter.DifficultTypes)
 	}
-	if filter.Bookmarked != nil {
-		argsEstimatedCount += 1
-	}
 	if filter.CreatedAtFrom != nil {
 		argsEstimatedCount += 1
 	}
